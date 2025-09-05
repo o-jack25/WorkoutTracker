@@ -1,124 +1,88 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
-  // Step navigation: 1 = selection, 2 = tracker
+  // Step control (1 = workout selection, 2 = tracker)
   const [step, setStep] = useState(1);
 
   // Selected workouts
   const [selectedWorkouts, setSelectedWorkouts] = useState([]);
-
-  // Tracker exercises
-  const [exercises, setExercises] = useState(() => {
-    const saved = localStorage.getItem("exercises");
-    return saved ? JSON.parse(saved) : [];
-  });
 
   // Tracker form state
   const [form, setForm] = useState({
     name: "",
     sets: "",
     reps: "",
-    weight: [] // array of weights per set
+    weight: []
   });
 
-  // Save exercises to localStorage
+  const [exercises, setExercises] = useState([]);
+
+  // Load from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("exercises");
+    if (stored) setExercises(JSON.parse(stored));
+  }, []);
+
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem("exercises", JSON.stringify(exercises));
   }, [exercises]);
 
-  // Toggle workout selection
-  const toggleWorkout = (workout) => {
-    if (selectedWorkouts.includes(workout)) {
-      setSelectedWorkouts(selectedWorkouts.filter((w) => w !== workout));
+  const workouts = ["Legs", "Back", "Biceps", "Shoulders", "Full-body", "Cardio"];
+
+  const toggleWorkout = (name) => {
+    if (selectedWorkouts.includes(name)) {
+      setSelectedWorkouts(selectedWorkouts.filter((w) => w !== name));
     } else {
-      setSelectedWorkouts([...selectedWorkouts, workout]);
+      setSelectedWorkouts([...selectedWorkouts, name]);
     }
   };
 
-  // Form input change for name, sets, reps
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // If changing sets, reset weight array to match new number of sets
-    if (name === "sets") {
-      const setsNumber = parseInt(value) || 0;
-      setForm({
-        ...form,
-        sets: setsNumber,
-        weight: Array(setsNumber).fill("")
-      });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
+    setForm({ ...form, [name]: value });
   };
 
-  // Add exercise
   const handleAddExercise = (e) => {
     e.preventDefault();
     if (!form.name || !form.sets || !form.reps) return;
 
-    // Ensure weight is always an array
-    const safeWeight = Array.isArray(form.weight)
-      ? form.weight
-      : form.weight
-      ? [form.weight]
-      : [];
+    // Split weight input by comma or space
+    const weightsArray =
+      typeof form.weight === "string"
+        ? form.weight.split(/[,\s]+/).map((w) => w.trim()).filter(Boolean)
+        : form.weight;
 
-    setExercises([...exercises, { ...form, weight: safeWeight }]);
-
-    // Reset form
+    setExercises([...exercises, { ...form, weight: weightsArray }]);
     setForm({ name: "", sets: "", reps: "", weight: [] });
   };
 
-  // Delete exercise
   const handleDeleteExercise = (index) => {
-    const updated = exercises.filter((_, i) => i !== index);
-    setExercises(updated);
+    const newExercises = [...exercises];
+    newExercises.splice(index, 1);
+    setExercises(newExercises);
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "500px", margin: "auto" }}>
-      {/* Step 1: Workout selection */}
+    <div className="App">
       {step === 1 && (
-        <div style={{ textAlign: "center" }}>
+        <div className="selection-page">
           <h1>Which workout are you doing today?</h1>
-
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "10px",
-              marginTop: "20px",
-              justifyContent: "center"
-            }}
-          >
-            {["Legs", "Back", "Biceps", "Shoulders", "Full-body", "Cardio"].map(
-              (workout) => (
-                <button
-                  key={workout}
-                  onClick={() => toggleWorkout(workout)}
-                  style={{
-                    padding: "10px 15px",
-                    borderRadius: "5px",
-                    border: selectedWorkouts.includes(workout)
-                      ? "2px solid #007bff"
-                      : "1px solid #ccc",
-                    backgroundColor: selectedWorkouts.includes(workout)
-                      ? "#e0f0ff"
-                      : "#fff",
-                    cursor: "pointer"
-                  }}
-                >
-                  {workout}
-                </button>
-              )
-            )}
+          <div className="workout-buttons">
+            {workouts.map((w) => (
+              <button
+                key={w}
+                onClick={() => toggleWorkout(w)}
+                className={selectedWorkouts.includes(w) ? "selected" : ""}
+              >
+                {w}
+              </button>
+            ))}
           </div>
-
           <button
+            className="next-button"
             onClick={() => setStep(2)}
-            style={{ marginTop: "20px", padding: "10px 20px", cursor: "pointer" }}
             disabled={selectedWorkouts.length === 0}
           >
             Next
@@ -126,28 +90,10 @@ function App() {
         </div>
       )}
 
-      {/* Step 2: Tracker page */}
       {step === 2 && (
-        <div>
-          {/* Back button */}
-          <button
-            onClick={() => setStep(1)}
-            style={{
-              marginBottom: "20px",
-              padding: "8px 15px",
-              cursor: "pointer",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-              backgroundColor: "#f0f0f0"
-            }}
-          >
-            ← Back
-          </button>
-
-          <h1>🏋️ Workout Tracker</h1>
-          <p>Selected Workouts: {selectedWorkouts.join(", ")}</p>
-
-          <form onSubmit={handleAddExercise} style={{ marginBottom: "20px" }}>
+        <div className="tracker-page">
+          <h2>Today's Workout</h2>
+          <form onSubmit={handleAddExercise} className="tracker-form">
             <div className="form-row">
               <label>Exercise:</label>
               <input
@@ -184,51 +130,38 @@ function App() {
               />
             </div>
 
-            {/* Dynamic per-set weight inputs */}
-            {form.sets > 0 &&
-              Array.from({ length: form.sets }).map((_, i) => (
-                <div className="form-row" key={i}>
-                  <label>Set {i + 1} Weight:</label>
-                  <input
-                    type="number"
-                    value={form.weight[i] || ""}
-                    onChange={(e) => {
-                      const newWeights = [...form.weight];
-                      newWeights[i] = e.target.value;
-                      setForm({ ...form, weight: newWeights });
-                    }}
-                    placeholder="Weight (lbs)"
-                  />
-                </div>
-              ))}
+            <div className="form-row">
+              <label>Weights (lbs, comma or space separated):</label>
+              <input
+                type="text"
+                name="weight"
+                placeholder="e.g. 60, 70, 80"
+                value={form.weight}
+                onChange={handleChange}
+              />
+            </div>
 
             <button type="submit">Add Exercise</button>
           </form>
 
-          <h2>Today's Workout</h2>
-          <div className="exercise-grid">
-            <div className="grid-header">
-              <div>Exercise</div>
-              <div>Sets</div>
-              <div>Reps</div>
-              <div>Weight</div>
-              <div>Action</div>
-            </div>
-
+          <div className="exercise-cards">
             {exercises.map((ex, index) => (
-              <div className="grid-row" key={index}>
-                <div>{ex.name}</div>
-                <div>{ex.sets}</div>
-                <div>{ex.reps}</div>
-                <div>
-                  {Array.isArray(ex.weight) && ex.weight.length > 0
-                    ? ex.weight.join(" lbs, ") + " lbs"
-                    : typeof ex.weight === "number"
-                    ? ex.weight + " lbs"
-                    : "-"}
-                </div>
-                <div>
+              <div className="exercise-card" key={index}>
+                <div className="exercise-header">
+                  <h3>{ex.name}</h3>
                   <button onClick={() => handleDeleteExercise(index)}>Delete</button>
+                </div>
+                <div className="exercise-info">
+                  <p><strong>Sets:</strong> {ex.sets}</p>
+                  <p><strong>Reps:</strong> {ex.reps}</p>
+                  <p><strong>Weights:</strong></p>
+                  <div className="weights-pills">
+                    {Array.isArray(ex.weight) && ex.weight.length > 0
+                      ? ex.weight.map((w, i) => (
+                          <span key={i}>{w} lbs</span>
+                        ))
+                      : "-"}
+                  </div>
                 </div>
               </div>
             ))}

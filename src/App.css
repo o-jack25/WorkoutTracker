@@ -1,93 +1,219 @@
-.App {
+/* ----------------------------
+   Global Styles
+---------------------------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom, #f5f5f5, #e0f7ff);
+  color: #333;
+}
+
+h1, h2 {
   text-align: center;
+  margin-bottom: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+button {
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  font-size: 16px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* ----------------------------
+   Workout Selection Page
+---------------------------- */
+.selection-page .workout-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  margin-bottom: 30px;
 }
 
-.App-link {
-  color: #61dafb;
+.selection-page .workout-buttons button {
+  background: linear-gradient(135deg, #1e90ff, #00bfff);
+  color: #fff;
+  padding: 12px 25px;
+  border-radius: 12px;
+  font-weight: bold;
 }
 
-/* Form alignment */
+.selection-page .workout-buttons button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.selection-page .workout-buttons button.selected {
+  background: linear-gradient(135deg, #28a745, #5cd65c);
+}
+
+.next-button {
+  display: block;
+  margin: 0 auto 30px auto;
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  padding: 12px 30px;
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.next-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.next-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* ----------------------------
+   Tracker Form
+---------------------------- */
+.tracker-form {
+  max-width: 400px;
+  margin: 0 auto 30px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease;
+}
+
+.tracker-form:hover {
+  transform: translateY(-3px);
+}
+
 .form-row {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
 
 .form-row label {
-  width: 120px;
-  margin-right: 10px;
-  text-align: right;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .form-row input {
-  flex: 1;
-  padding: 5px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cccccc;
+  font-size: 14px;
 }
 
-/* Exercise grid */
-.exercise-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.grid-header {
+.tracker-form button[type="submit"] {
+  background: linear-gradient(135deg, #1e90ff, #00bfff);
+  color: #ffffff;
+  padding: 12px 25px;
+  border-radius: 12px;
   font-weight: bold;
-  border-bottom: 2px solid #333;
-  display: contents;
+  width: 100%;
 }
 
-.grid-row {
-  display: contents;
+.tracker-form button[type="submit"]:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
-.exercise-grid div {
-  padding: 5px;
-  border-bottom: 1px solid #ccc;
+/* ----------------------------
+   Exercise Cards
+---------------------------- */
+.exercise-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.exercise-grid button {
-  padding: 3px 6px;
-  background-color: #ff4d4f;
-  color: white;
+.exercise-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 15px 20px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exercise-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exercise-header h3 {
+  margin: 0;
+  color: #1e90ff;
+}
+
+.exercise-header button {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  color: #fff;
   border: none;
-  border-radius: 3px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: bold;
   cursor: pointer;
 }
 
-.exercise-grid button:hover {
-  background-color: #d9363e;
+.exercise-header button:hover {
+  transform: scale(1.05);
 }
 
+/* Exercise info */
+.exercise-info p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Weight pills */
+.weights-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.weights-pills span {
+  background: linear-gradient(135deg, #e0f0ff, #a0d8ff);
+  color: #007bff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.weights-pills span:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #c0e0ff, #80cfff);
+}
+
+/* ----------------------------
+   Responsive
+---------------------------- */
+@media (max-width: 480px) {
+  .exercise-card {
+    padding: 12px 15px;
   }
-  to {
-    transform: rotate(360deg);
+
+  .exercise-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .exercise-info p {
+    font-size: 0.9rem;
+  }
+
+  .weights-pills span {
+    font-size: 0.8rem;
+    padding: 3px 6px;
   }
 }
